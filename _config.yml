@@ -1,0 +1,7 @@
+remote_theme: pages-themes/cayman@v0.2.0
+plugins:
+  - jekyll-remote-theme
+
+title: Recipe Rating Predictor
+description: EECS 398 Final Project – Predicting recipe stars from nutrients
+
