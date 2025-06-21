@@ -119,66 +119,108 @@ A simple pipeline using **`StandardScaler`** followed by **`LinearRegression`** 
 
 Based on the OLS regression results and VIF analysis, we recommend the following:
 
-#### ✅ Features to Keep
-- **`minutes`**
-  - Highly statistically significant (*p* < 0.001)
-  - Low multicollinearity (**VIF ≈ 1.6**)
-- **`protein`**
-  - Statistically significant (*p* ≈ 0.019)
-  - Moderate multicollinearity (**VIF ≈ 2.0**)
-- **`carbohydrates`**
-  - Strong significance (*p* ≈ 0.0004)
-  - Correlated with `calories` (**r = 0.73**), but carries more predictive power
+### ✅ Features to Keep
 
-#### ❌ Features to Drop
-- **`calories`**
-  - High multicollinearity (**VIF > 8**)
+- **`minutes`**  
+  - Highly statistically significant (*p* < 0.001)  
+  - Low multicollinearity (VIF ≈ 1.6)
+
+- **`protein`**  
+  - Statistically significant (*p* ≈ 0.019)  
+  - Moderate multicollinearity (VIF ≈ 2.0)
+
+- **`carbohydrates`**  
+  - Strong significance (*p* ≈ 0.0004)  
+  - Correlated with `calories` (r = 0.73), but carries more predictive power
+
+---
+
+### ❌ Features to Drop
+
+- **`calories`**  
+  - High multicollinearity (VIF > 8)  
   - Not statistically significant (*p* ≈ 0.06)
-- **`sugar`**, **`sodium`**, **`n_ingredients`**
-  - All have *p*-values > 0.05
+
+- **`sugar`**, **`sodium`**, **`n_ingredients`**  
+  - All have *p*-values > 0.05  
   - Minimal contribution to prediction
 
 > 🔍 **Conclusion:**  
-Final baseline model should retain only **`minutes`**, **`protein`**, and **`carbohydrates`** for better interpretability and performance.
-
-
-*StandardScaler → LinearRegression*  
-**Train RMSE 1.083 • Test RMSE 1.086**  
-
-> Residual funnel indicates heteroscedasticity → need a non-linear model.
+> The final baseline model should retain only `minutes`, `protein`, and `carbohydrates` for better interpretability and performance.
 
 ---
 
-## Final Model  
+### 🧠 Modeling Logic: Baseline Linear Regression
 
-**Pipeline**  
+To evaluate how simple numeric features explain recipe ratings, we constructed a baseline pipeline using standardized linear regression.
 
-1. Engineered features: `log_minutes`, **carb_per_ing** (carbs ÷ ingredients)  
-2. `QuantileTransformer` → normal  
-3. **RandomForestRegressor** (`300` trees · `max_depth=10` · `min_samples_leaf=3`)
+**Feature Selection**  
+We chose `minutes`, `protein`, and `carbohydrates` based on:
+- Low multicollinearity (VIF < 3)  
+- Statistically significant coefficients (p < 0.05)  
+- Strong interpretability
 
-| Metric | RMSE |
-|--------|------|
-| Train | **1.053** |
-| Test  | **1.087** |
+**Preprocessing**  
+- Dropped rows with missing values in either the features or target `avg_rating`  
+- Performed 80/20 train-test split with `random_state = 888` for reproducibility
 
-> Top importance: **carb_per_ing > protein > carbohydrates** – lower carb density & higher protein trend better.
+**Pipeline Construction**
 
-### TF-IDF Keyword Importance
+
+- Applied `StandardScaler()` to normalize numeric features  
+- Trained `LinearRegression()` on the standardized data
+
+**Evaluation**
+
+| Dataset | RMSE   |
+|---------|--------|
+| Train   | 1.083  |
+| Test    | 1.086  |
+
+- Coefficient magnitudes highlight `carbohydrates` and `minutes` as most predictive  
+- Residual plot showed underprediction for many 5★ recipes → points to non-linearity
+
+> This baseline model offers a transparent starting point and shows where linear regression fails — motivating non-linear or text-enhanced models.
+
+---
+
+## Final Model
+
+**Pipeline**
+
+1. Add engineered features: `log_minutes`, `carb_per_ing` (carbs ÷ ingredients)  
+2. Apply `QuantileTransformer(output_distribution='normal')`  
+3. Train `RandomForestRegressor` (300 trees · max_depth=10 · min_samples_leaf=3)
+
+**Results**
+
+| Metric | RMSE   |
+|--------|--------|
+| Train  | 1.053  |
+| Test   | 1.087  |
+
+> Top numeric importance: `carb_per_ing > protein > carbohydrates`  
+> Lower carb density and higher protein content trend toward better user ratings
+
+---
+
+### 📊 TF-IDF Keyword Importance
+
 <iframe src="assets/word_feature.html" width="800" height="600" frameborder="0"></iframe>
 
-![Static TF-IDF](assets/final.png)
-![Static Heatmap](assets/basic.png)
+![TF-IDF (static)](assets/final.png)  
+![Correlation Heatmap (static)](assets/basic.png)
 
-> Words like *cooking*, *great*, *cheese* align with high ratings; generic verbs (*easy*, *use*) align lower → text adds explanatory power.
+> Words like *cooking*, *great*, *cheese* align with high ratings;  
+> Generic verbs (*easy*, *use*) tend to align with lower ratings.  
+> → Text features clearly add explanatory power.
 
 ---
 
-## Conclusion & Next Steps  
+## ✅ Conclusion & Next Steps
 
-* Numeric nutrition alone explains limited variance (RMSE ≈ 1).  
-* “Lower carb density + higher protein” and moderate prep times correlate with better ratings.  
-* Next: integrate ingredient/description text embeddings, photos, and test gradient-boosted models or transformers for further gains.
+- **Numeric nutrition alone explains limited variance** (RMSE ≈ 1)  
+- **"Lower carb density + higher protein"** and moderate prep times correlate with better ratings  
+- **Future work**: Integrate full ingredient/description text, image features, and test models like XGBoost or transformer-based embeddings
 
-*Last updated: 20 Jun 2025*
-
+_Last updated: June 20, 2025_
