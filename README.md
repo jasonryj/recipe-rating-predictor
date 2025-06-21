@@ -110,10 +110,10 @@ A simple pipeline using **`StandardScaler`** followed by **`LinearRegression`** 
 
 ## Baseline Model  
 
-### Correlation Heatmap (interactive)
+### Correlation Heatmap
 <iframe src="assets/corr_heatmap.html" width="800" height="600" frameborder="0"></iframe>
 ![OLS Regression](assets/regression.png)
-![Static Heatmap](assets/basic.png)
+
 ![Average Rating Diagnostic](assets/rate_average.png)
 ### Regression Feature Selection Summary
 
@@ -164,10 +164,11 @@ Final baseline model should retain only **`minutes`**, **`protein`**, and **`car
 
 > Top importance: **carb_per_ing > protein > carbohydrates** – lower carb density & higher protein trend better.
 
-### TF-IDF Keyword Importance (interactive)
+### TF-IDF Keyword Importance
 <iframe src="assets/word_feature.html" width="800" height="600" frameborder="0"></iframe>
 
 ![Static TF-IDF](assets/final.png)
+![Static Heatmap](assets/basic.png)
 
 > Words like *cooking*, *great*, *cheese* align with high ratings; generic verbs (*easy*, *use*) align lower → text adds explanatory power.
 
