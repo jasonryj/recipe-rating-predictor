@@ -106,15 +106,15 @@ The dataset will be split **80 % for training and 20 % for testing**, using `ran
 ### Baseline Model  
 A simple pipeline using **`StandardScaler`** followed by **`LinearRegression`** provides a reference point to measure future improvements.
 
-![Average Rating Diagnostic](assets/rate_average.png)
+
 
 ## Baseline Model  
 
 ### Correlation Heatmap (interactive)
 <iframe src="assets/corr_heatmap.html" width="800" height="600" frameborder="0"></iframe>
-
+![OLS Regression](assets/regression.png)
 ![Static Heatmap](assets/basic.png)
-
+![Average Rating Diagnostic](assets/rate_average.png)
 ### Regression Feature Selection Summary
 
 Based on the OLS regression results and VIF analysis, we recommend the following:
