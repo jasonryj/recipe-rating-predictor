@@ -80,14 +80,33 @@ Most recipes fall below 500 kcal, but a long right tail approaches 2 000 kcal �
 
 ## Framing a Prediction Problem  
 
-| Item | Choice | Reason |
-|------|--------|--------|
-| **Target** | `avg_rating` (1–5) | Continuous stars preserve nuance. |
-| **Metric** | **RMSE** | Same unit as target; penalizes large errors. |
-| **Baseline features** | calories · minutes · n_ingredients | Simple, universally present. |
-| **Split** | 80 % train / 20 % test (`random_state=888`) | Reproducible and per-spec. |
+**Prediction Problem: Regressing _Average User Rating_**
 
----
+**Target:** `avg_rating` (continuous, range: 1.0 – 5.0)  
+**Prediction Task Type:** Regression  
+
+### Why this target?  
+The average user rating is a direct and interpretable measure of recipe quality and user satisfaction.  
+It is present in over 97 % of records after data cleaning. Predicting this value helps us understand what recipe features most impact user preferences.
+
+### Evaluation Metric  
+We will use **Root Mean Squared Error (RMSE)**. RMSE is expressed in the same units as the target (star rating) and penalises large prediction errors more than MAE, making it suitable for this task.
+
+### Baseline Features  
+Only cleaned numeric columns will be used for the baseline:
+
+* `calories`  
+* `minutes`  
+* `n_ingredients`  
+* Other nutrition columns (e.g., `sugar`, `sodium`, `protein`, etc.)
+
+### Train/Test Split  
+The dataset will be split **80 % for training and 20 % for testing**, using `random_state = 888` for reproducibility across baseline and final models.
+
+### Baseline Model  
+A simple pipeline using **`StandardScaler`** followed by **`LinearRegression`** provides a reference point to measure future improvements.
+
+![Average Rating Diagnostic](assets/rate_average.png)
 
 ## Baseline Model  
 
@@ -96,12 +115,32 @@ Most recipes fall below 500 kcal, but a long right tail approaches 2 000 kcal �
 
 ![Static Heatmap](assets/basic.png)
 
-> High collinearity between **calories & carbs** (r ≈ 0.73) → drop calories via VIF screening.
+### Regression Feature Selection Summary
 
-### Regression Feature Selection Summary  
-Keep `minutes`, `protein`, `carbohydrates`; drop calories & low-impact nutrients.  
+Based on the OLS regression results and VIF analysis, we recommend the following:
 
-![Average Rating Diagnostic](assets/rate_average.png)
+#### ✅ Features to Keep
+- **`minutes`**
+  - Highly statistically significant (*p* < 0.001)
+  - Low multicollinearity (**VIF ≈ 1.6**)
+- **`protein`**
+  - Statistically significant (*p* ≈ 0.019)
+  - Moderate multicollinearity (**VIF ≈ 2.0**)
+- **`carbohydrates`**
+  - Strong significance (*p* ≈ 0.0004)
+  - Correlated with `calories` (**r = 0.73**), but carries more predictive power
+
+#### ❌ Features to Drop
+- **`calories`**
+  - High multicollinearity (**VIF > 8**)
+  - Not statistically significant (*p* ≈ 0.06)
+- **`sugar`**, **`sodium`**, **`n_ingredients`**
+  - All have *p*-values > 0.05
+  - Minimal contribution to prediction
+
+> 🔍 **Conclusion:**  
+Final baseline model should retain only **`minutes`**, **`protein`**, and **`carbohydrates`** for better interpretability and performance.
+
 
 *StandardScaler → LinearRegression*  
 **Train RMSE 1.083 • Test RMSE 1.086**  
