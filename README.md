@@ -34,35 +34,51 @@ This breakdown sets the stage for exploring how nutrition relates to user rating
 
 > **After cleaning:** **82 072 recipes (97.9 % retained).**
 
-#### Calories Distribution (< 2000 kcal)
-<iframe src="assets/calories_dist.html" width="800" height="500" frameborder="0"></iframe>
-
-#### Calories Distribution (full)
+*Why plot?* Establishes baseline calorie distribution and motivates trimming extreme calories in cleaning.
+#### Calories Distribution
 <iframe src="assets/calories_cleaned.html" width="800" height="500" frameborder="0"></iframe>
+*Interpretation.* Most recipes cluster below **500 kcal**; the long right-tail highlights a handful of high-energy dishes.  
+
+*Why plot?* Establishes baseline calorie distribution and motivates trimming extreme calories in cleaning.
+
 
 #### Average Rating Distribution
 <iframe src="assets/rating_dist.html" width="800" height="500" frameborder="0"></iframe>
+*Interpretation.* Bimodal peaks at ★4 and ★5 reveal user rating bias toward higher scores.  
 
+*Why plot?* Helps choose RMSE (skewed, bounded target) and alerts us that class imbalance is minor.
 #### Cook-Time Distribution
 <iframe src="assets/cooktime_dist.html" width="800" height="500" frameborder="0"></iframe>
 
----
+*Interpretation.* Heavy right-skew; median ≈ 40 min, few > 600 min.  
+
+*Why plot?* Supports log-transform (`log_minutes`) and cook-time ≤ 600 min cleaning rule.
 
 #### Rating by Calorie Bin
 <iframe src="assets/rating_by_calorie_bin.html" width="800" height="500" frameborder="0"></iframe>
+*Interpretation.* Average rating dips slightly as calories exceed 1000 kcal.  
 
+*Why plot?* Shows non-linear nutrition effect; motivates treating calories via bins or tree models.
 #### Rating by Sugar Level
 <iframe src="assets/rating_by_sugar.html" width="800" height="500" frameborder="0"></iframe>
+*Interpretation.* Little variation—users don’t penalise sugar strongly within common ranges.  
 
+*Why plot?* Indicates sugar may be dropped from baseline features.
 #### Rating by Sodium Level
 <iframe src="assets/rating_by_sodium.html" width="800" height="500" frameborder="0"></iframe>
+*Interpretation.* Slight uptick at very high sodium but overall flat.  
 
+*Why plot?* Confirms sodium’s limited predictive value in numeric-only model.
 #### Cook-Time by Rating (violin)
 <iframe src="assets/violin_cook_time.html" width="800" height="500" frameborder="0"></iframe>
+*Interpretation.* Higher-rated recipes show tighter, generally shorter log-cook-time.  
 
+*Why plot?* Suggests minutes is predictive and log-scale reduces heteroscedasticity.
 #### Rating by Number of Ingredients
 <iframe src="assets/average_rating_by_ingredients.html" width="800" height="500" frameborder="0"></iframe>
+*Interpretation.* Ratings plateau after ~10 ingredients; very complex recipes don’t gain stars.  
 
+*Why plot?* Guides feature engineering—ingredient count has diminishing returns.
 ---
 
 ## Framing a Prediction Problem  
@@ -85,7 +101,9 @@ This breakdown sets the stage for exploring how nutrition relates to user rating
 
 ### Regression Feature Selection Summary  
 Based on **OLS** and **VIF** we keep **minutes, protein, carbohydrates**; drop calories (high VIF) and other low-value predictors.  
+*Interpretation.* High collinearity between **calories & carbs** (r≈0.73) and other pairs.  
 
+*Why plot?* Drives VIF analysis and decision to drop multicollinear calories in baseline model.
 ### Average Rating by Group (diagnostic)
 ![Average Rating](assets/rate_average.png)
 
@@ -116,7 +134,9 @@ Top numeric importance: **carb_per_ing > protein > carbohydrates**.
 ### TF-IDF Keyword Importance (static)
 ![TF-IDF Word Importance](assets/final.png)
 
-High-rating keywords: *cooking, great, cheese,* etc.; neutral/low keywords: *easy, add, use*.
+*Interpretation.* Words like *cooking, great, cheese* align with higher ratings; generic verbs lower.  
+
+*Why plot?* Demonstrates added explanatory power of text features beyond numeric nutrition.
 
 ---
 
