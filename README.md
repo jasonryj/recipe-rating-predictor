@@ -218,8 +218,6 @@ Pipeline([
 
 ### 📊 TF-IDF Keyword Importance
 
-<iframe src="assets/word_feature.html" width="800" height="600" frameborder="0"></iframe>
-
 > Words like *cooking*, *great*, *cheese* align with high ratings;  
 > Generic verbs (*easy*, *use*) tend to align with lower ratings.  
 > → Text features clearly add explanatory power **in interpretation**.
