@@ -131,7 +131,6 @@ Based on the OLS regression results and VIF analysis, we recommend the following
 
 - **`calories`**  
 - **`sugar`**, **`sodium`**, **`n_ingredients`**  
-> 🔍 **Conclusion:**  
 
 ---
 
@@ -192,17 +191,6 @@ We built a full pipeline:
 1. **Custom Transformer**: generates `log_minutes` and `carb_per_ing`  
 2. **QuantileTransformer**: maps all features to a normal distribution for robustness  
 3. **RandomForestRegressor**: allows non-linear splits and captures complex feature interactions
-
-```python
-Pipeline([
-  ('prep',  # Feature engineering + scaling
-    Pipeline([
-      ('feature_eng', RecipeFeatures()),
-      ('scaler', QuantileTransformer(output_distribution='normal'))
-    ])
-  ),
-  ('reg', RandomForestRegressor(random_state=888))
-])
 
 **Results**
 
