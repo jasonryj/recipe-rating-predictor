@@ -220,19 +220,35 @@ Pipeline([
 
 <iframe src="assets/word_feature.html" width="800" height="600" frameborder="0"></iframe>
 
-![TF-IDF (static)](assets/final.png)  
-![Correlation Heatmap (static)](assets/basic.png)
-
 > Words like *cooking*, *great*, *cheese* align with high ratings;  
 > Generic verbs (*easy*, *use*) tend to align with lower ratings.  
-> → Text features clearly add explanatory power.
+> → Text features clearly add explanatory power **in interpretation**.
+
+However, when we **included top TF-IDF features** in the regression pipeline,  
+**no significant improvement** was observed in RMSE on the test set.
+
+> **Conclusion:** While keywords help explain rating variation qualitatively,  
+> they do **not enhance numeric prediction performance** with the current setup.
+
 
 ---
 
-## ✅ Conclusion & Next Steps
+## ✅ Conclusion
 
-- **Numeric nutrition alone explains limited variance** (RMSE ≈ 1)  
-- **"Lower carb density + higher protein"** and moderate prep times correlate with better ratings  
-- **Future work**: Integrate full ingredient/description text, image features, and test models like XGBoost or transformer-based embeddings
+- **Numeric nutrition alone explains limited variance** in user ratings (Test RMSE ≈ 1).
+- **"Lower carb density + higher protein"** and moderate prep times show some correlation with higher-rated recipes.
+- Adding engineered features like `log_minutes` and `carb_per_ing` improved model fit on the training set, but **had minimal effect on test performance**.
+- Attempts to integrate **TF-IDF keyword features** did not improve RMSE, despite some clear patterns in word frequency and sentiment.
+
+###  Why the model struggles
+
+The main reason lies in the **distribution and subjectivity of user ratings**:
+
+- The **rating target is heavily skewed**, with most scores clustered at 4–5 stars. This reduces variance for the model to explain.
+- Many recipes may receive similar ratings for vastly different reasons—taste, nostalgia, ease—not all captured by numeric inputs.
+- **Noise in user preferences** (e.g., people giving 5★ for simple recipes or personal favorites) introduces irreducible error.
+- Even Random Forests—designed to handle non-linear relationships—were unable to meaningfully outperform linear baselines.
+
+> Overall, this project shows that while basic features like nutrition and cook time offer weak signals, **user ratings are influenced by factors that go beyond what structured metadata can capture**.
 
 _Last updated: June 20, 2025_
