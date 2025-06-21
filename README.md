@@ -35,15 +35,21 @@ EECS 398 final project website for recipe prediction
 
 ## Baseline Model
 
-### Feature Correlation Heatmap
+### Feature Correlation Heatmap (Interactive)
+<iframe src="assets/corr_heatmap.html" width="800" height="600" frameborder="0"></iframe>
+
+### Feature Correlation Heatmap (Static)
 ![Feature Correlation Heatmap](assets/basic.png)
 
-### VIF Table & OLS Summary
-![Regression Summary](assets/final.png)
+### Average Rating by Group
+![Average Rating](assets/rate_average.png)
 
 ---
 
 ## Final Model
 
-### TF-IDF Keyword Feature Importance
-![Word Feature Plot](assets/word feature.png)
+### TF-IDF Keyword Feature Importance (Interactive)
+<iframe src="assets/word_feature.html" width="800" height="600" frameborder="0"></iframe>
+
+### TF-IDF Keyword Feature Importance (Static)
+![TF-IDF Word Importance](assets/final.png)
