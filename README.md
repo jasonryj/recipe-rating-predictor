@@ -1,4 +1,4 @@
-# Recipe Rating Predictor  
+# What Makes a 5-Star Recipe?  
 *EECS 398 Final Project – Jason Rong (jasonryj@umich.edu)*  
 
 ---
