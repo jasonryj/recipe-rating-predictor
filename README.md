@@ -122,31 +122,16 @@ Based on the OLS regression results and VIF analysis, we recommend the following
 ### ✅ Features to Keep
 
 - **`minutes`**  
-  - Highly statistically significant (*p* < 0.001)  
-  - Low multicollinearity (VIF ≈ 1.6)
-
 - **`protein`**  
-  - Statistically significant (*p* ≈ 0.019)  
-  - Moderate multicollinearity (VIF ≈ 2.0)
-
 - **`carbohydrates`**  
-  - Strong significance (*p* ≈ 0.0004)  
-  - Correlated with `calories` (r = 0.73), but carries more predictive power
 
 ---
 
 ### ❌ Features to Drop
 
 - **`calories`**  
-  - High multicollinearity (VIF > 8)  
-  - Not statistically significant (*p* ≈ 0.06)
-
 - **`sugar`**, **`sodium`**, **`n_ingredients`**  
-  - All have *p*-values > 0.05  
-  - Minimal contribution to prediction
-
 > 🔍 **Conclusion:**  
-> The final baseline model should retain only `minutes`, `protein`, and `carbohydrates` for better interpretability and performance.
 
 ---
 
@@ -186,11 +171,38 @@ We chose `minutes`, `protein`, and `carbohydrates` based on:
 
 ## Final Model
 
-**Pipeline**
+---
 
-1. Add engineered features: `log_minutes`, `carb_per_ing` (carbs ÷ ingredients)  
-2. Apply `QuantileTransformer(output_distribution='normal')`  
-3. Train `RandomForestRegressor` (300 trees · max_depth=10 · min_samples_leaf=3)
+## 🧠 Modeling Logic (Feature Engineering + Random Forest)
+
+To improve performance and model nonlinear patterns, we enhanced the numeric-only model with engineered features and a tree-based estimator.
+
+### Feature Engineering
+
+We introduced 2 new features:
+- **`log_minutes`**: log-transformed cook time to reduce skew and variance
+- **`carb_per_ing`**: carbohydrate density (carbs ÷ number of ingredients)
+
+> These features capture prep efficiency and nutrition density — both relevant to perceived quality.
+
+### Modeling Pipeline
+
+We built a full pipeline:
+
+1. **Custom Transformer**: generates `log_minutes` and `carb_per_ing`  
+2. **QuantileTransformer**: maps all features to a normal distribution for robustness  
+3. **RandomForestRegressor**: allows non-linear splits and captures complex feature interactions
+
+```python
+Pipeline([
+  ('prep',  # Feature engineering + scaling
+    Pipeline([
+      ('feature_eng', RecipeFeatures()),
+      ('scaler', QuantileTransformer(output_distribution='normal'))
+    ])
+  ),
+  ('reg', RandomForestRegressor(random_state=888))
+])
 
 **Results**
 
